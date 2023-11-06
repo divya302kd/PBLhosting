@@ -1,0 +1,25 @@
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css");
+
+.nwthemecolor{
+  color: #006747;
+}
+.list-group {
+  max-height: 300px;
+  margin-bottom: 10px;
+  overflow:scroll;
+  -webkit-overflow-scrolling: touch;
+}
+
+.card-footer {
+  border-top: none !important;
+  background-color: transparent !important;
+}
+
+ .btn.btn-outline-light.btn-md {
+  border-color: transparent !important;
+}
+
+ .scrollScreen {
+     max-height: 700px !important;
+     overflow: scroll;
+ }
