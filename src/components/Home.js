@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import NewHeader from "./NewHeader";
-import {Card, Carousel, Col, Row} from "react-bootstrap";
+import {Card, CardDeck, Carousel} from "react-bootstrap";
 
 import logo from '../project-images/nwmsu-admin-image.jpg'
 
@@ -149,25 +149,22 @@ const Home = () => {
                 </div>
             </div>*/}
             <div className="container-fluid p-5">
-                <h3 className="nwthemecolor"> Trending Projects</h3>
-                <Row xs={1} md={2} className="g-4">
-                    {posts.map((post, index) => (
-                        <Col key={index}>
-                            <Card>
-                                <Card.Body>
-                                    <Card.Title>{post.sub}</Card.Title>
-                                    <Card.Text>
-                                        {post.desc}
-                                    </Card.Text>
-                                </Card.Body>
-                                <Card.Footer>
-                                    <small className="text-muted"> Created By - {post.crtdBy}</small>
-                                </Card.Footer>
-                            </Card>
-                        </Col>
-                    ))}
-                </Row>
-
+              <h2> Famous Blog Posts</h2>
+                <CardDeck>
+                  {posts.map((post, index) => (
+                      <Card>
+                      <Card.Body>
+                      <Card.Title>{post.sub}</Card.Title>
+                    <Card.Text>
+                      {post.desc}
+                    </Card.Text>
+                    </Card.Body>
+                    <Card.Footer>
+                    <small className="text-muted"> Created By -  {post.crtdBy}</small>
+                    </Card.Footer>
+                    </Card>
+                  ))}
+                </CardDeck>
 
             </div>
 

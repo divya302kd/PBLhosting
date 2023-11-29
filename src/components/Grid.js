@@ -1,6 +1,5 @@
 import {Button, Table} from "react-bootstrap";
 import React, {useEffect, useState} from "react";
-import XHRUtil from "./XHRUtil";
 
 const Grid = (props) => {
 
@@ -16,10 +15,13 @@ const Grid = (props) => {
 
             if (response.ok) {
                 const data = await response.json();
+                console.log(data)
                 alert(`${data?.status} ` + data.title)
+                //setProjects(data);
                 props.fetchProjects();
             } else {
                 console.error('Error fetching data:', response.statusText);
+                //navigate('/')
             }
         } catch (error) {
             console.error('An error occurred:', error);
@@ -29,7 +31,6 @@ const Grid = (props) => {
     let data = [{
         title: 'Test',
         description: 'Test',
-        createdBy: '',
         privacy: 'public',
         contactNumber: '',
         technologyUsed: '',
@@ -49,10 +50,8 @@ const Grid = (props) => {
         console.log(e);
         fetchProjects(e.target?.parentElement?.parentElement.id, e?.target?.title)
     }
-    const initialheaders = ['#','Title', 'Description','Created By', 'Privacy', 'Contact Number', 'Tech Used', 'Start Date', 'End Date', 'Status']
+    const initialheaders = ['#','Title', 'Description', 'Privacy', 'Contact Number', 'Tech Used', 'Start Date', 'End Date', 'Status']
     const [headers, setHeaders] = useState(initialheaders);
-
-    const dates = ['startDate', 'endDate'];
 
     const keys = Object.keys(data[0]);
 
@@ -62,11 +61,11 @@ const Grid = (props) => {
             <Table hover responsive>
 
                 <thead>
-                <tr>
+                <tr className="btn-primary">
 
                     {
                         headers.map((key, index) => (
-                            <th key={index}> {key}</th>
+                            <th id={index}> {key}</th>
                         ))
                     }
                 </tr>
@@ -74,18 +73,20 @@ const Grid = (props) => {
                 <tbody>
 
                 {
-                    props.data.map((project, trIndex) => (
-                        <tr key={trIndex}>
-                            <td>{trIndex + 1}</td>
+                    props.data.map((project, index) => (
+                        <tr>
+                            <td>{index + 1}</td>
                             {
-                                keys.map((key, tdIndex) => (
-                                    <td key={tdIndex}> { dates.includes(key) ? XHRUtil.convertDate(project[key]) :project[key]}</td>
+                                keys.map((key) => (
+                                    <td> { project[key]}</td>
 
                                 ))
+                               // ()
+
                             }
                             <td hidden={!(props.showAction === 'true')} id={project.projectId}>
-                                <Button onClick={onEdit} name="Approved" variant="link" className="text-success"><i title="Approved" className="fa fa-check fa-2x"></i></Button>
-                                <Button onClick={onEdit} name = "Rejected" variant="link" className="text-danger"  ><i  title= "Rejected" className="fa fa-close fa-2x"></i></Button>
+                                <Button onClick={onEdit} name="Approved" variant="link"><i title="Approved" className="fa fa-check fa-2x"></i></Button>
+                                <Button onClick={onEdit} name = "Rejected" variant="link" style={{color: "red"}} ><i  title= "Rejected" className="fa fa-close fa-2x"></i></Button>
                             </td>
                         </tr>
                     ))

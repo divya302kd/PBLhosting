@@ -1,26 +1,9 @@
-import {
-    Badge,
-    Button,
-    Card,
-    Col, Container, Form,
-    InputGroup,
-    Modal,
-    Nav,
-    Navbar,
-    NavDropdown,
-    NavItem,
-    Row,
-    Tab,
-    Tabs
-} from "react-bootstrap";
-import logo from "../project-images/nwmsu-logo.png";
+import {Button, Nav, Navbar, NavDropdown, NavItem, Tab, Tabs} from "react-bootstrap";
+import logo from "../project-images/nwmsu-logo2.png";
 import React, {useEffect, useState} from "react";
 import Grid from "../components/Grid";
-import {NavLink, Outlet, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import GenericModal from "./PostProjectModal";
-import SearchComponent from "../components/search/SearchComponent";
-import XHRUtil from "../components/XHRUtil";
-import ProjectCard from "../components/project/ProjectCard";
 
 const Dashboard = () => {
 
@@ -35,32 +18,45 @@ const Dashboard = () => {
 
     const [key, setKey] = useState('myProjects');
 
-    const [search, setSearch] = useState(false);
+    const setActiveTab = (tabName) =>{
 
-    const setActiveTab = (tabName) => {
-
-            setKey(tabName)
-        },
-
-        onOpenSearch = () => {
-            setSearch(true)
-        },
-
-        onCloseSearch = () => {
-            setSearch(false)
-        };
+        setKey(tabName)
+    };
 
 
     useEffect(() => {
         setAdminFlag();
+        fetchProjects();
     }, []);
 
     const navigate = useNavigate(),
 
-        setAdminFlag = function () {
-            setIsAdmin(localStorage.getItem('isAdmin') === 'true');
-        };
+    setAdminFlag = function () {
+        setIsAdmin(localStorage.getItem('isAdmin') === 'true');
+    };
 
+    const fetchProjects = async () => {
+        try {
+            const response = await fetch(`/project/getProjectsByName`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log(data)
+                setProjects(data);
+            } else {
+                console.error('Error fetching data:', response.statusText);
+                navigate('/')
+            }
+        } catch (error) {
+            console.error('An error occurred:', error);
+        }
+    };
 
     const onLogout = function () {
 
@@ -70,76 +66,92 @@ const Dashboard = () => {
 
 
     return (
-        <Container fluid>
+        <div className="container-fluid">
 
-            <Navbar bg="light" style={{height: 80}}>
+            <Navbar bg="light" className="p-0" style={{height: 100}} sticky="top">
                 <Navbar.Brand href="#home">
                     <img
                         alt=""
                         src={logo}
-                        width="200"
-                        height="65"
+                        width="160"
+                        height="50"
                         className="d-inline-block align-content-between"
                     />{' '}
                     <span className="font-weight-bold">Project Explorer</span>
                 </Navbar.Brand>
                 <Navbar.Toggle/>
                 <Navbar.Collapse className="justify-content-end">
-                    <Nav.Link className="m-2" onClick={onOpenSearch}>
-                        <InputGroup size="md">
-                            <InputGroup.Text id="basic-addon1"> <i
-                                className="fa fa-search fa-lg nwthemecolor"></i></InputGroup.Text>
-                            <Form.Control
-                                placeholder="Search"
-                                aria-label="Username"
-                                aria-describedby="basic-addon1" readOnly
-                            />
-                        </InputGroup>
-
-                    </Nav.Link>
-                    <NavDropdown title={localStorage.getItem('username')} id="collapsible-nav-dropdown">
-                        <NavLink to="/Dashboard/profile" className={"m-3"}>
-                            <i className="fa fa-user-circle text-dark" aria-hidden="true"> Profile</i>
-                        </NavLink>
-                        <NavLink to="/" className={"m-3"}>
-                            <i className="fa fa-sign-out text-dark" aria-hidden="true"> Logout</i>
-                        </NavLink>
+                    <Navbar.Text>
+                        Signed in as: <a>{localStorage.getItem('username')}</a>
+                    </Navbar.Text>
+                    <NavDropdown title='' id="collapsible-nav-dropdown">
+                        <NavDropdown.Item onClick={() => setShowProfile(true)}>Profile</NavDropdown.Item>
+                        <NavDropdown.Item onClick={onLogout}>Logout</NavDropdown.Item>
                     </NavDropdown>
 
                 </Navbar.Collapse>
             </Navbar>
             <div className="row">
-                <div className="bg-dark min-vh-100 col-md-1" style={{paddingTop: '30px', maxWidth: '90px'}}>
+                <div className="bg-dark min-vh-100" style={{paddingTop: '30px', maxWidth: '90px'}}>
 
-                    <Nav justify className="flex-column align-items-stretch">
-                        <NavLink to={isAdmin ? "/Dashboard/admin"  : "/Dashboard/landing"} className={"m-3"}>
-                            <i className="fa fa-list fa-2x text-white" aria-hidden="true"></i>
-                        </NavLink>
-                        <NavLink to="/Dashboard/profile" className={"m-3"}>
-                            <i className="fa fa-user-circle fa-2x text-white" aria-hidden="true"></i>
-                        </NavLink>
-
-                        <NavLink to="/Dashboard/postProject" hidden={isAdmin} className={"m-3"}>
-                            <i className="fa fa-plus-circle fa-2x text-white" aria-hidden="true"></i>
-                        </NavLink>
+                    <Nav fill className="flex-column">
+                        <Nav.Link onClick={() => setShowProfile(true)}>
+                                <i className="fa fa-user-circle fa-2x" aria-hidden="true"></i><p>Profile</p>
+                        </Nav.Link>
+                        <Nav.Link hidden={isAdmin} onClick={() => setShowProjectModal(true)} >
+                                <i className="fa fa-plus-circle fa-2x" aria-hidden="true"></i><p>Post</p>
+                        </Nav.Link>
+                        <Nav.Link onClick={() => setKey("myProjects")}>
+                                <i className="fa fa-list fa-2x" aria-hidden="true"></i><p> Projects</p>
+                        </Nav.Link>
+                        <Nav.Link onClick={() => setKey("approved")}>
+                                <i className="fa fa-check-circle fa-2x" aria-hidden="true"></i><p>Approved Projects</p>
+                        </Nav.Link>
+                        <Nav.Link onClick={() => setKey("rejected")}>
+                                <i className="fa fa-close fa-2x" aria-hidden="true"></i><p>Rejected Projects</p>
+                        </Nav.Link>
+                        <Nav.Link hidden={!isAdmin} onClick={() => setKey("pending")}>
+                                <i className="fa fa-exclamation-triangle fa-2x" aria-hidden="true"></i><p> Pending </p>
+                        </Nav.Link>
                     </Nav>
                 </div>
-                <div className="col-md-11 m-3" style={{
-                    overflow: 'scroll',
-                    boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)"
-                }}>
-                    <Outlet>
-                    </Outlet>
+                <div className="col-md-11">
+                    <div  className="container col-md-12 d-flex justify-content-end p-3">
+                        <Button hidden={isAdmin} variant="primary" onClick={() => setShowProjectModal(true)}>
+                            <i className="fa fa-plus" aria-hidden="true"></i> Post Project</Button>
+                    </div>
+                    <div className='container col-md-12'>
+                        <Tabs activeKey={key} onSelect={(k) => setKey(k)} id="uncontrolled-tab-example">
+                            <Tab eventKey="myProjects" title={isAdmin ? "User Projects":"My Projects"}>
+                                <div className="col-md-12 p-5">
+                                    <Grid showAction = "false" data={projects} title={isAdmin ? "All Projects":"My Projects"}></Grid>
+                                </div>
+                            </Tab>
+
+                            <Tab eventKey="approved" title="Approved">
+                                <div className="col-md-12 p-5">
+                                    <Grid showAction = "false"  data={projects.filter(project => project.status === 'Approved')}></Grid>
+                                </div>
+                            </Tab>
+                            <Tab eventKey="rejected" title="Rejected" >
+                                <div className="col-md-12 p-5">
+                                    <Grid showAction = "false" data={projects.filter(project => project.status === 'Rejected')}></Grid>
+                                </div>
+                            </Tab>
+                            <Tab eventKey="pending" title="Pending for Approval" disabled = {!isAdmin}>
+                                <div className="col-md-12 p-5">
+                                    <Grid showAction = "true" fetchProjects = {fetchProjects} data={projects.filter(project => project.status === 'Pending')}></Grid>
+                                </div>
+                            </Tab>
+                        </Tabs>
+                    </div>
                 </div>
             </div>
-            <GenericModal fullscreen show={showProjectModal} type='postProject' title="Post Project"
+            <GenericModal show={showProjectModal} type='postProject' title="Post Project"
                           onHide={() => setShowProjectModal(false)}></GenericModal>
             <GenericModal show={showProfile} type='profile' title="Profile"
                           onHide={() => setShowProfile(false)}></GenericModal>
-            <Modal size="lg" show={search} onHide={onCloseSearch}>
-                <SearchComponent></SearchComponent>
-            </Modal>
-        </Container>
+        </div>
     )
 }
 

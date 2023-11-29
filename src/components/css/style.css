@@ -108,7 +108,7 @@ h5 {
     border: transparent;
     outline: none;
 }
-/*
+
 .btn-primary {
     background: #ff5108;
     border: 1px solid #ff5108;
@@ -132,8 +132,8 @@ h5 {
     color: #fff;
 }
 
-
-nav.navbar {
+/****** Navbar overrides ******/
+/*nav.navbar {
     border: none;
     background: none;
 }

@@ -74,13 +74,6 @@ class Header extends Component {
                             <div className="navbar-collapse collapse in" id="navbarMain" aria-expanded="true" style={{ top: "65px" }}>
 
                                 <ul className="nav navbar-nav navbar-right">
-                                   {/* <li>
-                                        <a href="/Home">Home</a>
-                                    </li>
-
-                                    <li>
-                                        <a href="/About">About</a>
-                                    </li>*/}
                                     <li>
                                         <button className="btn btn-primary-outline" id="signup" onClick={this.onOpenModal}>SignUp</button>
                                     </li>
