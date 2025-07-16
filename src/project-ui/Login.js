@@ -53,7 +53,7 @@ const Login = () => {
 
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!formData.email.match(emailPattern)) {
-      errors.email = 'Please enter a valid email address.';
+      errors.email = 'Please enter a valid mail address.';
     }
 
     if (formData.password.length < 8) {
